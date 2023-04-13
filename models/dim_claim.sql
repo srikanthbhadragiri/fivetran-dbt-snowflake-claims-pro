@@ -1,21 +1,13 @@
 {{ config(materialized='view') }}
 with
     clm as (
-        select claim_id, submission_date, gross, patientshare, net, vat
-        from raw_sc.claim_master
+        select * from {{ref('stg_claims')}}
     ),
     diag as (
-        select claim_id, count(diagnosis_code) total_diagnosis
-        from raw_sc.claim_diagnosis
-        group by claim_id
+        select * from {{ref('stg_diagnosis')}}
     ),
     act as (
-        select
-            claim_id,
-            count(activity_id) tot_activities,
-            sum(act_net_price * act_quantity) gross
-        from raw_sc.claim_activity
-        group by claim_id
+        select * from {{ref('stg_activities')}}
     ),
     claimview as (
         select
